@@ -2,10 +2,6 @@
 using namespace std;
 typedef long long ll;
 
-const int MAXN = 2e5 + 7;
-
-// modular by tourist
-
 template <typename T>
 T inverse(T a, T m) {
   T u = 0, v = 1;
@@ -171,52 +167,29 @@ ModType& md = VarMod::value;
 using Mint = Modular<VarMod>;
 */
 
-constexpr int md = 1e9 + 7;
+constexpr int md = 1'000'000'007;
 using Mint = Modular<std::integral_constant<decay<decltype(md)>::type, md>>;
 
-vector<Mint> fact(1, 1);
-vector<Mint> inv_fact(1, 1);
-
-Mint C(int n, int k) {
-  if (k < 0 || k > n) {
-    return 0;
-  }
-  while ((int) fact.size() < n + 1) {
-    fact.push_back(fact.back() * (int) fact.size());
-    inv_fact.push_back(1 / fact.back());
-  }
-  return fact[n] * inv_fact[k] * inv_fact[n - k];
-}
-
 Mint solve() {
-    Mint res = 1;
+    Mint res = 0;
     int n, k;
     cin >> n >> k;
-    vector <int> a(6, 0);
-    int x;
-    for (int i = 0; i < n; ++i) {
-        cin >> x;
-        int now = 1;
-        for (int j = 0; j < 6; ++j) {
-            if (x & now) {
-                a[j]++;
-            }
-            now <<= 1;
+    vector <Mint> a(n + 1);
+    for (int i = 1; i < n + 1; ++i) {
+        cin >> a[i];
+    }
+    /// Число подпоследовательностей, если мы берём первые i чисел и у них AND j
+    vector <vector <Mint>> dp(n + 1, vector <Mint> (1 << 6, 0));
+    for (int i = 1; i < n + 1; ++i) {
+        for (int j = 0; j < (1 << 6); ++j) {
+            dp[i][j] += dp[i - 1][j];
+            dp[i][j & (int)a[i]] += dp[i - 1][j];
         }
+        dp[i][(int)a[i]] = dp[i][(int)a[i]] + 1;
     }
-    cout << "a: ";
-    for (int i = 0; i < 6; ++i) {
-        cout << a[i] << ' ';
-    }
-    cout << '\n';
-    for (int i = 0; i < (1 << 6); ++i) {
-        if (__builtin_popcount(i) == k) {
-            for (int j = 0; j < 6; ++j) {
-                if (i & (1 << j)) {
-                    Mint two = 2;
-                    res *= power(two, (const)a[j]) - 1;
-                }
-            }
+    for (int j = 0; j < (1 << 6); ++j) {
+        if (__builtin_popcount(j) == k) {
+            res += dp[n][j];
         }
     }
     return res;
