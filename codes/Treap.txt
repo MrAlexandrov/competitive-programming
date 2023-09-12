@@ -1,0 +1,209 @@
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+typedef pair <ll, ll> pll;
+
+#define NULL asdf
+
+mt19937_64 rnd(time(0));
+
+const ll NULL = 0;
+const ll INF = INT_MAX;
+
+struct item {
+    ll val, prior;
+    ll sum, mn;
+    ll L = NULL, R = NULL;
+    ll sz;
+    bool isupd, isadd;
+    ll upd = 0, add = 0;
+    item() {
+        val = 0, prior = 0;
+        sum = 0, mn = INF;
+        sz = 0;
+        isupd = isadd = false;
+        upd = add = 0;
+    }
+    item(ll x) {
+        val = x, prior = rnd();
+        sum = x, mn = x;
+        sz = 1;
+        isupd = isadd = false;
+        upd = add = 0;
+    }
+};
+
+struct Treap {
+    ll root;
+    vector <item> tree;
+    Treap() {
+        tree.push_back(item());
+        root = NULL;
+    }
+    void push_back(ll val) {
+        tree.push_back(item(val));
+        merge(root, root, tree.size() - 1);
+    }
+    void norm(ll T) {
+        if (T == NULL) {
+            return;
+        }
+        ll L = tree[T].L, R = tree[T].R;
+        push(L), push(R);
+        tree[T].sum = tree[L].sum + tree[T].val + tree[R].sum;
+        tree[T].mn = min({tree[L].mn, tree[T].val, tree[R].mn});
+        tree[T].sz = tree[L].sz + 1LL + tree[R].sz;
+    }
+    void push(ll T) {
+        if (T == NULL) {
+            return;
+        }
+        if (tree[T].isupd) {
+            ll val = tree[T].upd;
+            tree[T].val = val;
+            tree[T].sum = val * tree[T].sz;
+            tree[T].mn = val;
+            tree[T].isupd = false;
+
+            ll L = tree[T].L, R = tree[T].R;
+            tree[L].isupd = true, tree[L].isadd = false;
+            tree[L].upd = val, tree[L].add = 0;
+
+            tree[R].isupd = true, tree[R].isadd = false;
+            tree[R].upd = val, tree[R].add = 0;
+        }
+        if (tree[T].isadd) {
+            ll val = tree[T].add;
+            tree[T].val += val;
+            tree[T].sum += val * tree[T].sz;
+            tree[T].mn += val;
+            tree[T].isadd = false;
+            tree[T].add = 0;
+
+            ll L = tree[T].L, R = tree[T].R;
+            tree[L].isadd = true;
+            tree[L].add += val;
+
+            tree[R].isadd = true;
+            tree[R].add += val;
+        }
+    }
+    void split(ll T, ll &L, ll &R, ll x) {
+        push(T);
+        if (T == NULL) {
+            return void(L = R = NULL);
+        }
+        if (x <= tree[ tree[T].L ].sz) {
+            split(tree[T].L, L, tree[T].L, x);
+            R = T;
+        } else {
+            split(tree[T].R, tree[T].R, R, x - (tree[ tree[T].L ].sz + 1));
+            L = T;
+        }
+        norm(T);
+    }
+    void merge(ll &T, ll L, ll R) {
+        push(L), push(R);
+        if (L == NULL || R == NULL) {
+            return void(T = (R == NULL ? L : R));
+        }
+        if (tree[L].prior > tree[R].prior) {
+            merge(tree[L].R, tree[L].R, R);
+            T = L;
+        } else {
+            merge(tree[R].L, L, tree[R].L);
+            T = R;
+        }
+        norm(T);
+    }
+    ll sum(ll l, ll r) {
+        ll a, b, c;
+        split(root, a, b, l);
+        split(b, b, c, r - l);
+        ll res = tree[b].sum;
+        merge(b, b, c);
+        merge(root, a, b);
+        return res;
+    }
+    ll mn(ll l, ll r) {
+        ll a, b, c;
+        split(root, a, b, l);
+        split(b, b, c, r - l);
+        ll res = tree[b].mn;
+        merge(b, b, c);
+        merge(root, a, b);
+        return res;
+    }
+    void upd(ll l, ll r, ll val) {
+        ll a, b, c;
+        split(root, a, b, l);
+        split(b, b, c, r - l);
+        tree[b].isupd = true, tree[b].isadd = false;
+        tree[b].upd = val, tree[b].add = 0;
+        push(b);
+        merge(b, b, c);
+        merge(root, a, b);
+    }
+    void add(ll l, ll r, ll val) {
+        ll a, b, c;
+        split(root, a, b, l);
+        split(b, b, c, r - l);
+        tree[b].isadd = true;
+        tree[b].add += val;
+        push(b);
+        merge(b, b, c);
+        merge(root, a, b);
+    }
+};
+
+int main()
+{
+    ios_base::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    ///freopen("input.txt", "r", stdin);
+    ///freopen("output.txt", "w", stdout);
+    Treap T;
+    ll n;
+    cin >> n;
+    for (ll i = 0; i < n; ++i) {
+        ll x;
+        cin >> x;
+        T.push_back(x);
+    }
+    ll m;
+    cin >> m;
+    while (m--) {
+        string s;
+        cin >> s;
+        if (s == "rsq") {
+            ll l, r;
+            cin >> l >> r;
+            --l;
+            cout << T.sum(l, r) << '\n';
+        } else if (s == "update") {
+            ll l, r, val;
+            cin >> l >> r >> val;
+            --l;
+            T.upd(l, r, val);
+        } else if (s == "rmq") {
+            ll l, r;
+            cin >> l >> r;
+            --l;
+            cout << T.mn(l, r) << '\n';
+        } else if (s == "add") {
+            ll l, r, val;
+            cin >> l >> r >> val;
+            --l;
+            T.add(l, r, val);
+        } else {
+            ll pos;
+            cin >> pos;
+            cout << T.sum(pos - 1, pos) << '\n';
+        }
+    }
+    return 0;
+}
+
+/**
+
+
+**/

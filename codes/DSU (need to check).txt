@@ -1,0 +1,37 @@
+struct DSU {
+    vector <int> parent, rnk, sz;
+    int c;
+    DSU(int n) : parent(n + 1), rnk(n + 1,0), sz(n + 1,1), c(n) {
+        for (int i = 1; i <= n; ++i) {
+            parent[i] = i;
+        }
+    }
+    int find(int x) {
+        return (parent[x] == x ? x : (parent[x] = find(parent[x])));
+    }
+    bool same(int i, int j) {
+        return find(i) == find(j);
+    }
+    int get_sz(int i) {
+        return sz[find(i)];
+    }
+    int count() {
+        return c;
+    }
+    int unite(int i, int j) {
+        if ((i = find(i)) == (j = find(j))) {
+            return -1;
+        } else {
+            --c;
+        }
+        if (rnk[i] > rnk[j]) {
+            swap(i, j);
+        }
+        parent[i] = j;
+        sz[j] += sz[i];
+        if (rnk[i] == rnk[j]) {
+            rnk[j]++;
+        }
+        return j;
+    }
+};

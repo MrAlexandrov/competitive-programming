@@ -1,0 +1,30 @@
+void z(string &s, vector <ll> &z) {
+    ll n = s.size();
+    z.resize(n);
+    z[0] = 0;
+    for (ll i = 1, l = 0, r = 1; i < n; ++i) {
+        z[i] = min(max(0LL, r - i), z[i - l]);
+        while (i + z[i] < n && s[z[i]] == s[i + z[i]]) {
+            ++z[i];
+        }
+        if (i + z[i] > r) {
+            l = i, r = i + z[i];
+        }
+    }
+}
+
+void prefix(string &s, vector <ll> &pi) {
+    ll n = s.size();
+    pi.resize(n);
+    pi[0] = 0;
+    for (ll i = 1; i < n; ++i) {
+        ll j = pi[i - 1];
+        while (j > 0 && s[i] != s[j]) {
+            j = pi[j - 1];
+        }
+        if (s[i] == s[j]) {
+            ++j;
+        }
+        pi[i] = j;
+    }
+}

@@ -1,0 +1,119 @@
+#include <stdio.h>
+#include <iostream>
+#include <vector>
+#include <stdlib.h>
+ 
+using namespace std;
+ 
+const int INF = (int)1e9;
+ 
+struct Node {
+    int L, R, val, mn, sz, rev, prior;
+    Node(int x) {
+        val = mn = x;
+        sz = 1;
+        rev = R = L = 0;
+        prior = rand() | (rand() << 16);
+    }
+    Node() {
+        prior = rev = sz = L = R = 0;
+        val = mn = INF;
+    }
+};
+ 
+struct Treap {
+    vector<Node> A;
+    int t;
+    Treap() {
+        A.clear();
+        A.push_back(Node());
+        t = 0;
+    }
+    void add(int x) {
+        A.push_back(Node(x));
+        t = merge_(t, (int)A.size() - 1);
+    }
+    void push(int v) {
+        if (A[v].rev) {
+            A[A[v].L].rev ^= 1;
+            A[A[v].R].rev ^= 1;
+            A[v].rev = 0;
+            swap(A[v].L, A[v].R);
+        }
+    }
+    void norm(int v) {
+        if (v == 0) return;
+        A[v].mn = min(A[v].val, min(A[A[v].L].mn, A[A[v].R].mn));
+        A[v].sz = A[A[v].L].sz + A[A[v].R].sz + 1;
+    }
+    int merge_(int L, int R) {
+        if (!L || !R) {
+            return L + R;
+        }
+        int T = 0;
+        if (A[L].prior < A[R].prior) {
+            push(L);
+            A[L].R = merge_(A[L].R, R);
+            T = L;
+        } else {
+            push(R);
+            A[R].L = merge_(L, A[R].L);
+            T = R;
+        }
+        norm(T);
+        return T;
+    }
+    void split(int T, int &L, int &R,  int ii) {
+        if (!T) {
+            R = L = 0;
+            return;
+        }
+        push(T);
+        if (A[A[T].L].sz >= ii) {
+            split(A[T].L, L, A[T].L, ii);
+            R = T;
+        } else {
+            split(A[T].R, A[T].R, R, ii - A[A[T].L].sz - 1);
+            L = T;
+        }
+        norm(T);
+    }
+    void rotate_(int l, int r) {
+        int a, b, c;
+        split(t, a, b, l);
+        split(b, b, c, r - l + 1);
+        A[b].rev = 1;
+        t = merge_(a, merge_(b, c));
+    }
+    int getMin(int l, int r) {
+        int a, b, c;
+        split(t, a, b, l);
+        split(b, b, c, r - l + 1);
+        int res = A[b].mn;
+        t = merge_(a, merge_(b, c));
+        return res;
+    }
+};
+ 
+int main() {
+    int n, q;
+    cin >> n >> q;
+    Treap T;
+    while (n--) {
+        int x;
+        cin >> x;
+        T.add(x);
+    }
+    while(q--) {
+        int t, l, r;
+        cin >> t >> l >> r;
+        l--, r--;
+        if (t == 1) {
+            T.rotate_(l, r);
+        }
+        if (t == 2) {
+            cout << T.getMin(l, r) << endl;
+        }
+    }
+    return 0;
+}

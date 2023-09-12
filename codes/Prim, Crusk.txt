@@ -1,0 +1,59 @@
+void Prim (ll s) {
+    edge[s] = 0;
+    from[s] = s;
+    priority_queue <pll, vector <pll>, greater <pll>> q;
+    q.push({edge[s], s});
+    while (!q.empty()) {
+        ll u = q.top().second;
+        q.pop();
+        if (was[u]) continue;
+        else was[u] = true;
+        for (auto t : g[u]) {
+            ll v = t.first, w = t.second;
+            if (w < edge[v] && !was[v]) {
+                res -= (edge[v] == INF ? 0 : edge[v]);
+                res += w;
+                edge[v] = w;
+                from[v] = u;
+                q.push({edge[v], v});
+            }
+        }
+    }
+}
+
+ll find (ll x) {
+    if (x == p[x]) return x;
+    else return p[x] = find (p[x]);
+}
+ 
+void unite (ll a, ll b) {
+    a = find (a);
+    b = find (b);
+    if (sz[a] < sz[b]) {
+        sz[a] += sz[b];
+        p[b] = a;
+    }
+    else {
+        sz[b] += sz[a];
+        p[a] = b;
+    }
+}
+ 
+void Krus () {
+    sort (g.begin(), g.end());
+    ll cnt = 0;
+    for (ll i = 0; i < g.size() && cnt < n; ++i) {
+        ll a = g[i].second.first, b = g[i].second.second;
+        ll fa = find (a), fb = find (b);
+        if (fa == fb) continue;
+        else {
+            unite (fa, fb);
+            res += g[i].first;
+            if (a == 0)
+                st.push_back (b);
+            else
+                edge.push_back ({a, b});
+            ++cnt;
+        }
+    }
+}

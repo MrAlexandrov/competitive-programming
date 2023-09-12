@@ -1,0 +1,75 @@
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+typedef pair <ll, ll> pll;
+
+const ll N = 2e5 + 8;
+
+ll n, m;
+vector <vector <ll>> g(N);
+vector <vector <ll>> rg(N);
+vector <bool> used(N);
+vector <ll> t;
+vector <vector <ll>> c;
+vector <ll> col(N);
+vector <set <ll>> cond;
+
+void DFS1(ll v) {
+    used[v] = true;
+    for (ll to : g[v]) {
+        if (used[to]) {
+            continue;
+        }
+        DFS1(to);
+    }
+    t.push_back(v);
+}
+
+void DFS2(ll v) {
+    used[v] = true;
+    c.back().push_back(v);
+    col[v] = c.size() - 1;
+    cond.push_back({});
+    for (ll to : rg[v]) {
+        if (used[to]) {
+            if (col[v] != col[to]) {
+                cond[col[to]].insert(col[v]);
+                ///cond[col[v]].insert(col[to]);
+            }
+            continue;
+        }
+        DFS2(to);
+    }
+}
+
+int main()
+{
+    ios_base::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    cin >> n >> m;
+    for (ll i = 0; i < m; ++i) {
+        ll v, u;
+        cin >> v >> u;
+        --v, --u;
+        g[v].push_back(u);
+        rg[u].push_back(v);
+    }
+    for (ll i = 0; i < n; ++i) {
+        if (!used[i]) {
+            DFS1(i);
+        }
+    }
+    reverse(t.begin(), t.end());
+    fill(used.begin(), used.end(), false);
+    for (ll i : t) {
+        if (!used[i]) {
+            c.push_back({});
+            DFS2(i);
+        }
+    }
+    return 0;
+}
+
+/**
+
+
+**/
