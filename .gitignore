@@ -1,7 +1,10 @@
-**/*
-!**/*.cpp
-bin
-obj
-*.cbp
-*.layout
-*.depend
+*
+!contests/
+!contests/**/
+!*.cpp
+#!**/*.cpp
+#bin
+#obj
+#*.cbp
+#*.layout
+#*.depend
