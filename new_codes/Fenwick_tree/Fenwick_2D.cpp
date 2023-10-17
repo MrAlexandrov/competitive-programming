@@ -24,18 +24,12 @@ struct Fenwick {
 		for (int i = 0; i < n; ++i) {
 			for (int j = 0; j < m; ++j) {
 				t[i][j] = a[i][j];
-				if (!i && !j) {
-					continue;
-				}
-				if (i) {
-					t[i][j] += t[i - 1][j];
-				}
-				if (j) {
-					t[i][j] += t[i][j - 1];
-				} 
-				if (i && j) {
-					t[i][j] -= t[i - 1][j - 1];
-				}
+				if (!i && !j) continue;
+				
+				if (i) t[i][j] += t[i - 1][j];
+				if (j) t[i][j] += t[i][j - 1];
+				
+				if (i && j) t[i][j] -= t[i - 1][j - 1];
 			}
 		}
 		for (int rx = n - 1; rx >= 0; --rx) {
@@ -43,15 +37,11 @@ struct Fenwick {
 				int lx = rx & (rx + 1);
 				int ly = ry & (ry + 1);
 				if (!lx && !ly) continue;
-				if (lx) {
-					t[rx][ry] -= t[lx - 1][ry];
-				}
-				if (ly) {
-					t[rx][ry] -= t[rx][ly - 1];
-				}
-				if (lx && ly) {
-					t[rx][ry] += t[lx - 1][ly - 1];
-				}
+				
+				if (lx) t[rx][ry] -= t[lx - 1][ry];
+				if (ly) t[rx][ry] -= t[rx][ly - 1];
+				
+				if (lx && ly) t[rx][ry] += t[lx - 1][ly - 1];
 			}
 		}
 	}
@@ -72,7 +62,7 @@ struct Fenwick {
 		return res;
 	}
 	ll sum(int lx, int ly, int rx, int ry) {
-		return pref(rx, ry) - pref(rx, ly - 1) - pref(lx - 1, ry) + pref(lx - 1, ly - 1);
+		return pref(rx, ry) - pref(lx - 1, ry) - pref(rx, ly - 1) + pref(lx - 1, ly - 1);
 	}
 /**
 (0,0)-------------------------------*
