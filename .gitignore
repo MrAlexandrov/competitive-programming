@@ -1,10 +1,12 @@
-*
-!contests/
-!contests/**/
-!*.cpp
-#!**/*.cpp
-#bin
-#obj
-#*.cbp
-#*.layout
-#*.depend
+# *
+# !contests/
+# !contests/**/
+# !*.cpp
+
+
+.vscode
+Makefile
+*.txt
+*.o
+
+new_codes/*
