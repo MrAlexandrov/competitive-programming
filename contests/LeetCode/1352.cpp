@@ -14,8 +14,8 @@ public:
             Product_ = {1};
         }
     }
-    
-    int getProduct(int k) {
+
+    int getProduct(int k) const {
         int m = static_cast<int>(Product_.size());
         return (k < m ? Product_.back() / Product_[m - k - 1] : 0);
     }
