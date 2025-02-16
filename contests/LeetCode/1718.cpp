@@ -1,6 +1,5 @@
 #include <functional>
 #include <iostream>
-#include <set>
 #include <vector>
 
 class Solution {
@@ -33,10 +32,10 @@ public:
 };
 
 int main() {
-    std::ios_base::sync_with_stdio(false); 
-    std::cin.tie(nullptr); 
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr);
     std::cout.tie(nullptr);
-    for (int n = 1; n < 20; ++n) { 
+    for (int n = 1; n < 20; ++n) {
         int m = (n << 1) - 1;
         std::vector<int> result(m);
         std::vector<bool> used(n, false);
@@ -93,6 +92,5 @@ int main() {
 2 1 2
 3 1 2 3 2
 4 2 3 2 4 3 1
-5 3 4 1 3 5 4
 
 **/
