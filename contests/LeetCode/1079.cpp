@@ -1,16 +1,11 @@
 #include <iostream>
 #include <string>
-#include <unordered_map>
 #include <vector>
 #include <algorithm>
 
 class Solution {
 public:
     int numTilePossibilities(std::string tiles) {
-        std::unordered_map<char, int> count;
-        for (const auto& i : tiles) {
-            ++count[i];
-        }
         int n = static_cast<int>(tiles.size());
         std::vector<std::string> answer;
         for (int i = 1, end = (1 << n); i < end; ++i) {
