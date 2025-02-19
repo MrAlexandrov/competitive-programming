@@ -1,8 +1,6 @@
-#include <algorithm>
 #include <cassert>
 #include <iostream>
 #include <string>
-#include <utility>
 
 class Solution {
 public:
@@ -14,7 +12,6 @@ public:
         if (third < k) return {};
 
         --k;
-        // std::cout << "begin:" << k << std::endl;
         std::string answer;
         char lastCharacter;
         if (0 <= k && k < first) {
@@ -26,7 +23,6 @@ public:
             k -= second;
             lastCharacter = 'c';
         }
-        // std::cout << "zero:" << k << std::endl;
         answer += lastCharacter;
         auto nextCharacter = [&lastCharacter]() {
             if (lastCharacter == 'a') return std::make_pair('b', 'c');
@@ -41,7 +37,6 @@ public:
             } else {
                 lastCharacter = next.second;
             }
-            // std::cout << i << ":" << k << std::endl;
             answer += lastCharacter;
         }
         return answer;
