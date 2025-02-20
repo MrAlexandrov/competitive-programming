@@ -6,30 +6,13 @@
 class Solution {
 public:
     std::string findDifferentBinaryString(std::vector<std::string>& nums) {
-        int n = static_cast<int>(nums.front().size());
-        for (const auto& num : nums) {
-            int currentNumber = 0;
-            for (const auto& c : num) {
-                currentNumber <<= 1;
-                if (c == '1') ++currentNumber;
-            }
-            exists[currentNumber] = true;
+        int n = static_cast<int>(nums.size());
+        std::string result(n, '0');
+        for (int i = 0; i < n; ++i) {
+            result[i] = ('1' - nums[i][i]) + '0';
         }
-        std::string answer(n, '0');
-        for (int i = 0, end = (1 << n); i < end; ++i) {
-            if (!exists[i]) {
-                int currentNumber = i;
-                for (int j = n - 1; j >= 0; --j) {
-                    if (currentNumber & 1) answer[j] = '1';
-                    currentNumber >>= 1;
-                }
-                return answer;
-            }
-        }
-        return {};
+        return result;
     }
-private:
-    std::bitset<(1 << 16)> exists;
 };
 
 int main() {
