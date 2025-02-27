@@ -14,38 +14,26 @@ public:
             position[arr[i]].push_back(i);
         }
         int answer = 0;
-        std::vector<bool> checked(1e6, 0);
         for (int i = 0; i < n; ++i) {
             for (int j = i + 1; j < n; ++j) {
-                if (arr[i] > arr[j] 
-                    || checked[i * 1000 + j]
-                ) {
+                if (arr[i] > arr[j]) {
                     continue;
                 }
                 int a = i;
                 int b = j;
                 int currentResult = 0;
                 while (true) {
-                    // checked[a * 1000 + b] = true;
                     int value = arr[a] + arr[b];
                     if (!position.contains(value)) {
-                        // std::cout << std::endl;
                         break;
                     }
                     const auto& currentPosition = position[value];
                     auto next = std::upper_bound(currentPosition.begin(), currentPosition.end(), b);
                     if (next == currentPosition.end()) {
-                        // std::cout << std::endl;
                         break;
                     }
                     int c = *next;
                     currentResult = std::max(3, currentResult + 1);
-                    // if (currentResult == 3) {
-                    //     std::cout << arr[a] << " " << arr[b] << " " << arr[c] << " ";
-                    // } else {
-                    //     std::cout << arr[c] << " ";
-                    // }
-                    checked[b * 1000 + c] = true;
                     a = b;
                     b = c;
                 }
