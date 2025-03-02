@@ -1,13 +1,7 @@
+#include "utils.h"
+
 #include <iostream>
 #include <vector>
-
-template<typename T>
-std::ostream& operator<<(std::ostream& out, const std::vector<T>& value) {
-    for (const auto& i : value) {
-        out << i << " ";
-    }
-    return out;
-}
 
 class Solution {
 public:
